@@ -1,0 +1,67 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check for placeholder text
+        run: |
+          echo "Checking for placeholder text in HTML..."
+          if grep -rE '\{\{[A-Z_]+\}\}|lorem ipsum|placeholder|TODO:|FIXME:' public/*.html; then
+            echo "::error::Found placeholder text in HTML files"
+            exit 1
+          fi
+          echo "✓ No placeholders found"
+      
+      - name: Validate SEO meta tags
+        run: |
+          echo "Checking SEO requirements..."
+          HTML_FILE="public/index.html"
+          
+          # Check for required meta tags
+          if ! grep -q '<title>' "$HTML_FILE"; then
+            echo "::error::Missing <title> tag"
+            exit 1
+          fi
+          
+          if ! grep -q 'meta name="description"' "$HTML_FILE"; then
+            echo "::error::Missing meta description"
+            exit 1
+          fi
+          
+          if ! grep -q 'meta name="viewport"' "$HTML_FILE"; then
+            echo "::error::Missing viewport meta tag"
+            exit 1
+          fi
+          
+          echo "✓ SEO meta tags validated"
+      
+      - name: Check for excessive comments
+        run: |
+          echo "Checking for excessive comments..."
+          COMMENT_COUNT=$(grep -c '<!--' public/index.html || true)
+          if [ "$COMMENT_COUNT" -gt 10 ]; then
+            echo "::warning::Found $COMMENT_COUNT HTML comments - consider reducing"
+          fi
+          echo "✓ Comment check passed"
+
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
