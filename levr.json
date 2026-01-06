@@ -10,5 +10,45 @@
     "imported"
   ],
   "credentialSetId": "zRS-zGQzM8TR",
-  "createdAt": 1765970954216
+  "createdAt": 1765970954216,
+  "workflows": {
+    "modules": {
+      "deploy": {
+        "enabled": true,
+        "version": "0.2.0",
+        "file": ".github/workflows/deploy.yml"
+      },
+      "preview": {
+        "enabled": true,
+        "version": "0.1.2",
+        "file": ".github/workflows/preview.yml"
+      },
+      "qa": {
+        "enabled": true,
+        "version": "0.2.0",
+        "file": ".github/workflows/qa.yml"
+      },
+      "seo": {
+        "enabled": false,
+        "version": "0.2.0",
+        "file": ".github/workflows/seo.yml"
+      },
+      "lighthouse": {
+        "enabled": false,
+        "version": "0.2.0",
+        "file": ".github/workflows/lighthouse.yml"
+      },
+      "security": {
+        "enabled": false,
+        "version": "0.1.0",
+        "file": ".github/workflows/security.yml"
+      }
+    },
+    "generatedAt": 1767722449844
+  },
+  "wranglerVersion": "0.2.0",
+  "schemaVersion": "1.1.0",
+  "version": "0.6.3",
+  "updatedAt": 1767722449844,
+  "filesVersion": "0.2.0"
 }
